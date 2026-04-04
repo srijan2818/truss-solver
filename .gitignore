@@ -39,3 +39,8 @@
 
 # debug information files
 *.dwo
+
+a.out
+build/
+.vscode/
+.DS_Store
