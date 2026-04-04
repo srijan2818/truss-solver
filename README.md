@@ -4,26 +4,71 @@ A header-only C++ project for solving internal forces and nodal displacements in
 
 ## Derivation of Stiffness Matrix $[k_e]$
 
-Displacement method is formulate by relating nodal displacements $\{q\}$ to the internal strain energy $U$. For a truss element with nodes $1$ and $2$, the change in length $\Delta L$ is the projection of the relative displacement onto the element's unit vector $\hat{n}$.
+Displacement method is formulated by relating nodal displacements $\mathbf{q}$ to the internal strain energy $U$. For a truss element with nodes $1$ and $2$, the change in length $\Delta L$ is the projection of the relative displacement onto the element's unit vector $\hat{n}$.
 
 ### 1. Kinematics
-Let $\mathbf{u}_1$ and $\mathbf{u}_2$ ( both $\in \mathbb{R}^{n \times 1}$ )   be the displacement vectors of the two nodes. The axial deformation $\Delta L$ is:
-$$\Delta L = (\mathbf{u}_2 - \mathbf{u}_1) \cdot \hat{n} = \begin{bmatrix} -\hat{n}^T & \hat{n}^T \end{bmatrix} \begin{Bmatrix} \mathbf{u}_1 \\ \mathbf{u}_2 \end{Bmatrix}$$
+
+Let $\mathbf{u}_1$ and $\mathbf{u}_2$ (both $\in \mathbb{R}^{n \times 1}$) be the displacement vectors of the two nodes. The axial deformation $\Delta L$ is:
+
+$$\Delta L = (\mathbf{u}_2 - \mathbf{u}_1)\cdot \hat{n} = \begin{bmatrix} -\hat{n}^T & \hat{n}^T \end{bmatrix} \begin{Bmatrix} \mathbf{u}_1 \\ \mathbf{u}_2 \end{Bmatrix}$$
 
 ### 2. Strain Energy
-The elastic strain energy for an axial member is $U = \frac{EA}{2L}(\Delta L)^2$. Expand $(\Delta L)^2$:
-$$(\Delta L)^2 = \left( \begin{bmatrix} -\hat{n}^T & \hat{n}^T \end{bmatrix} \begin{Bmatrix} \mathbf{u}_1 \\ \mathbf{u}_2 \end{Bmatrix} \right)^T \left( \begin{bmatrix} -\hat{n}^T & \hat{n}^T \end{bmatrix} \begin{Bmatrix} \mathbf{u}_1 \\ \mathbf{u}_2 \end{Bmatrix} \right)$$
 
-Expanding this results in the quadratic form:
-$$(\Delta L)^2 = \begin{bmatrix} \mathbf{u}_1^T & \mathbf{u}_2^T \end{bmatrix} \underbrace{\begin{bmatrix} \hat{n}\hat{n}^T & -\hat{n}\hat{n}^T \\ -\hat{n}\hat{n}^T & \hat{n}\hat{n}^T \end{bmatrix}}_{\text{2*dim X 2*dim Matrix}} \begin{Bmatrix} \mathbf{u}_1 \\ \mathbf{u}_2 \end{Bmatrix}$$
+The elastic strain energy for an axial member is:
 
+$$
+U = \frac{EA}{2L}(\Delta L)^2
+$$
 
+Expand $(\Delta L)^2$:
 
-Substituting this back into the energy equation $U = \frac{1}{2} \{q\}^T [k_e] \{q\}$:
-$$U = \frac{1}{2} \{q\}^T \left( \frac{EA}{L} \begin{bmatrix} \hat{n}\hat{n}^T & -\hat{n}\hat{n}^T \\ -\hat{n}\hat{n}^T & \hat{n}\hat{n}^T \end{bmatrix} \right) \{q\}$$
+$$
+(\Delta L)^2 =
+\left(
+\begin{bmatrix} -\hat{n}^T & \hat{n}^T \end{bmatrix}
+\begin{bmatrix} \mathbf{u}_1 \\ \mathbf{u}_2 \end{bmatrix}
+\right)^T
+\left(
+\begin{bmatrix} -\hat{n}^T & \hat{n}^T \end{bmatrix}
+\begin{bmatrix} \mathbf{u}_1 \\ \mathbf{u}_2 \end{bmatrix}
+\right)
+$$
 
-Element stiffness matrix $[k_e]$ is defined :
-$$[k_e] = \frac{EA}{L} \begin{bmatrix} \hat{n}\hat{n}^T & -\hat{n}\hat{n}^T \\ -\hat{n}\hat{n}^T & \hat{n}\hat{n}^T \end{bmatrix}$$
+Expanding into quadratic form:
+
+$$
+(\Delta L)^2 =
+\begin{bmatrix} \mathbf{u}_1^T & \mathbf{u}_2^T \end{bmatrix}
+\begin{bmatrix}
+\hat{n}\hat{n}^T & -\hat{n}\hat{n}^T \\
+-\hat{n}\hat{n}^T & \hat{n}\hat{n}^T
+\end{bmatrix}
+\begin{bmatrix} \mathbf{u}_1 \\ \mathbf{u}_2 \end{bmatrix}
+$$
+
+Substituting into $U = \frac{1}{2}\mathbf{q}^T [k_e] \mathbf{q}$:
+
+$$
+U = \frac{1}{2}\mathbf{q}^T
+\left(
+\frac{EA}{L}
+\begin{bmatrix}
+\hat{n}\hat{n}^T & -\hat{n}\hat{n}^T \\
+-\hat{n}\hat{n}^T & \hat{n}\hat{n}^T
+\end{bmatrix}
+\right)
+\mathbf{q}
+$$
+
+Element stiffness matrix:
+
+$$
+[k_e] = \frac{EA}{L}
+\begin{bmatrix}
+\hat{n}\hat{n}^T & -\hat{n}\hat{n}^T \\
+-\hat{n}\hat{n}^T & \hat{n}\hat{n}^T
+\end{bmatrix}
+$$
 
 ---
 
@@ -57,9 +102,9 @@ Model integrity and safeguards against physically impossible or mathematically s
 - **Connectivity**:
   - `connectivityCheck()`: Stack DFS on a Static Adjacency List starting from the support nodes. If any node is unreachable, the system is flagged as disconnected, preventing a singular matrix error during the solve.
 - **Determinacy & Stability**: 
-    - `dof_constraint()`: It flags systems as under/over constrained/ Statically Determinate ($m + r < dim \cdot j$).
+    - `dof_constraint()`: It flags systems as under/over constrained/ Statically Determinate.
   
-- `verifyModel()`: Performs all the above checks alove with the material properties ($E, A > 0$), loads dimensions and returns a `ValidationResults` struct with:
+- `verifyModel()`: Performs all the above checks above with the material properties ($E, A > 0$), loads dimensions and returns a `ValidationResults` struct with:
     - Overall result
     - Statically Determinate
     - Log message 
