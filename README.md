@@ -126,10 +126,10 @@ Solves the truss system (if statically determinate, obtained via verification mo
  - Analytical check : single bar axial test
  - Cross method verification with static and displacmenet methods for a Warren truss.
 ---
-**User-Defined ID's are decoupled from Internal memory offsets.
-- No out of bounds errors occurs whe User IDs excees total node count (give `checkElementNodeValidity()` was also run).
-- Frontend can use any naming convention
-- In `postprocessing.h`, `node_i` and `node_j` use to access physical coordinates and `index_i`, `index_j` for specific row access in the solved displacement vector.
+**Indexing convention**
+- The solver expects packed, zero-based internal node indices in `Element`, `Support`, and `Load`.
+- `checkElementNodeValidity()` and load checks guard against out-of-range indices.
+- If frontend/user IDs are non-sequential, remap them to internal indices in input parsing before calling the solver.
 ### Future plans
 - Add input/output modules, and a frontend with WASM
 - Transition to utilize sparse formats to handle larger systems more efficiently

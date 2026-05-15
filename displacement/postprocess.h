@@ -7,8 +7,6 @@
 inline void computeElementKinematics(
     const Node& node_i,
     const Node& node_j,
-    int index_i,
-    int index_j,
     const std::vector<double>& u,
     const int dim,
     double& delta,
@@ -30,9 +28,10 @@ inline void computeElementKinematics(
     for(int d=0;d<dim;d++){
         n[d] /= length;
     }
-
-    int base_i = index_i * dim;
-    int base_j = index_j * dim;
+    const int idx_i = node_i.id;
+    const int idx_j = node_j.id; 
+    int base_i = idx_i * dim;
+    int base_j = idx_j * dim;
 
     delta = 0.0;
     for(int d=0;d<dim;d++){
@@ -43,14 +42,12 @@ inline void computeElementKinematics(
 inline double computeElementForce(
     const Node& node_i,
     const Node& node_j,
-    int index_i,
-    int index_j,
     const std::vector<double>& u,
     const int dim,
     const double stiff_coeff
 ){
     double delta,length;
-    computeElementKinematics(node_i,node_j,index_i,index_j,u,dim,delta,length);
+    computeElementKinematics(node_i,node_j,u,dim,delta,length);
 
     double f = (stiff_coeff/length) * delta;
 
@@ -60,13 +57,11 @@ inline double computeElementForce(
 inline double computeElementStrain(
     const Node& node_i,
     const Node& node_j,
-    int index_i,
-    int index_j,
     const std::vector<double>& u,
     const int dim
 ){
     double delta,length;
-    computeElementKinematics(node_i,node_j,index_i,index_j,u,dim,delta,length);
+    computeElementKinematics(node_i,node_j,u,dim,delta,length);
 
     return delta/length;
 }
@@ -74,13 +69,12 @@ inline double computeElementStrain(
 inline double computeElementStress(
     const Node& node_i,
     const Node& node_j,
-    int index_i,
-    int index_j,
+
     const std::vector<double>& u,
     const int dim,
     const double E
 ){
-    double strain = computeElementStrain(node_i,node_j,index_i,index_j,u,dim);
+    double strain = computeElementStrain(node_i,node_j,u,dim);
 
     return E*strain;
 }
@@ -88,15 +82,13 @@ inline double computeElementStress(
 inline ElementResponse computeElementResponse(
     const Node& node_i,
     const Node& node_j,
-    int index_i,
-    int index_j,
     const std::vector<double>& u,
     const int dim,
     const double E,
     const double A
 ){
     double delta,length;
-    computeElementKinematics(node_i,node_j,index_i,index_j,u,dim,delta,length);
+    computeElementKinematics(node_i,node_j,u,dim,delta,length);
 
     double strain = delta/length;
     double stress = E*strain;
@@ -122,7 +114,7 @@ inline std::vector<double> computeAllElementForces(
         const Node& node_j = nodes[element.node_j];
         const double stiff_coeff = E*A;
 
-        forces[e] = computeElementForce(node_i,node_j,element.node_i,element.node_j,u,dim,stiff_coeff);
+        forces[e] = computeElementForce(node_i,node_j,u,dim,stiff_coeff);
     }
 
     return forces;
@@ -141,7 +133,7 @@ inline std::vector<ElementResponse> computeAllElementResponses(
     for(int e=0;e<elements.size();e++){
         const auto& element = elements[e];
 
-        results[e] = computeElementResponse(nodes[element.node_i],nodes[element.node_j],element.node_i,element.node_j,u,dim,E,A);
+        results[e] = computeElementResponse(nodes[element.node_i],nodes[element.node_j],u,dim,E,A);
     }
 
     return results;
