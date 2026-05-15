@@ -36,8 +36,8 @@ int main() {
         report("Mechanism Check", !res.result, "Caught under-constrained system");
     }
 
-    // CASE 2: Disconnected Node
-    // Expected: Connectivity check should fail
+    // // CASE 2: Disconnected Node
+    // // Expected: Connectivity check should fail
     {
         std::vector<Node> nodes = {{0, {0.0, 0.0}}, {1, {1.0, 0.0}}, {2, {2.0, 0.0}}};
         std::vector<Element> elements = {{0, 0, 1}}; // Node 2 is floating

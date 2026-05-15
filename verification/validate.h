@@ -73,7 +73,7 @@ inline bool connectivityCheck(
 
     std::vector<int> recent_edge_id (n_nodes,-1);
     std::vector<int> to   (2*n_elements);
-    std::vector<int> last_edge_id (2*n_elements);
+    std::vector<int> last_edge_id (n_nodes);
     int edgePtr = 0;
     for(const auto& elem:elements){
 

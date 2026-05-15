@@ -1,6 +1,7 @@
 # truss-solver
 A header-only C++ project for solving internal forces and nodal displacements in 2D/3D truss systems using Method of Joints (Static Equilibirum) and Finite Element Method. 
 
+* This solver is for linear static truss analysis only with small displacement/strain along axis, global constant element properties, nodal loads and adequate constraints. Its does not cover nonlinearity, bending DOFs, dynamics or thermal/contact effects.
 
 ## Derivation of Stiffness Matrix $[k_e]$
 
